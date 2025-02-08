@@ -6,8 +6,8 @@
 using namespace std;
 
 bool gameOver;
-const int width = 70;
-const int height = 30;
+const int width = 60;
+const int height = 25;
 int x, y, fruitX, fruitY, score;
 int tailX[100], tailY[100];
 int nTail;
