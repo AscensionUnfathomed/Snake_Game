@@ -14,7 +14,7 @@ A simple Snake game implemented in C++ using the console interface. The game fea
 ## How to Play
 - Use `W`, `A`, `S`, `D` keys to move Up, Left, Down, and Right, respectively.
 - Press `X` to exit the game.
-- The goal is to collect food (`F`) to grow the snake and increase the score.
+- The goal is to collect food (`o`) and super food (`O`) to grow the snake and increase the score.
 - Avoid colliding with the snake's own body to prevent game over.
 
 ## Requirements
