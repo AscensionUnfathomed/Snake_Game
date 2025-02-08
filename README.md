@@ -6,8 +6,7 @@ A simple Snake game implemented in C++ using the console interface. The game fea
 ## Features
 - Classic Snake game logic.
 - Continuous movement with real-time input.
-- Edge wrapping: the snake appears on the opposite side when it moves out of bounds.
-- Game over on self-collision.
+- Game over on self-collision and boundary collision.
 - Score tracking and game duration display.
 - Console cursor hiding for smooth display updates.
 
