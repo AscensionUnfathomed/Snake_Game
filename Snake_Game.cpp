@@ -6,8 +6,8 @@
 using namespace std;
 
 bool gameOver;
-const int width = 60;
-const int height = 25;
+const int width = 30;
+const int height = 30;
 int x, y, fruitX, fruitY, score;
 int tailX[100], tailY[100];
 int nTail;
@@ -36,6 +36,7 @@ public:
 };
 
 int dir;
+int highScore = 0;
 
 void SetColor(int color) {
     SetConsoleTextAttribute(hConsole, color);
@@ -48,11 +49,39 @@ void HideCursor() {
     SetConsoleCursorInfo(hConsole, &cursorInfo);
 }
 
+void ShowCursor() {
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(hConsole, &cursorInfo);
+    cursorInfo.bVisible = true;
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
+}
+
+void ClearScreen() {
+    COORD topLeft = {0, 0};
+    SetConsoleCursorPosition(hConsole, topLeft);
+    CONSOLE_SCREEN_BUFFER_INFO screen;
+    DWORD written;
+    GetConsoleScreenBufferInfo(hConsole, &screen);
+    FillConsoleOutputCharacterA(
+        hConsole, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
+    FillConsoleOutputAttribute(
+        hConsole, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
+        screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
+    SetConsoleCursorPosition(hConsole, topLeft);
+}
+
 void Setup() {
     gameOver = false;
-    dir = Direction::STOP;
+    dir = Direction::RIGHT;
     x = width / 2;
     y = height / 2;
+    
+    // Initialize tail with 3 segments
+    nTail = 3;
+    tailX[0] = x - 1; tailY[0] = y;
+    tailX[1] = x - 2; tailY[1] = y;
+    tailX[2] = x - 3; tailY[2] = y;
+
     fruitX = rand() % width;
     fruitY = rand() % height;
     score = 0;
@@ -61,14 +90,16 @@ void Setup() {
     superFoodActive = false;
     startTime = clock();
     speedFactor = 1.0;
+
     HideCursor();
+    ClearScreen();
 }
 
 void Draw() {
     cursorPos.X = 0;
     cursorPos.Y = 0;
-    SetConsoleCursorPosition(hConsole, cursorPos);
-    
+    SetConsoleCursorPosition(hConsole, cursorPos); // Move cursor to the top-left instead of clearing screen
+
     SetColor(14);
     for (int i = 0; i < width + 2; i++) cout << "#";
     cout << endl;
@@ -93,6 +124,7 @@ void Draw() {
                         SetColor(11);
                         cout << "o";
                         print = true;
+                        break;
                     }
                 }
                 if (!print) {
@@ -143,8 +175,7 @@ void Logic() {
         case Direction::DOWN: y++; break;
         default: break;
     }
-    if (x >= width) x = 0; else if (x < 0) x = width - 1;
-    if (y >= height) y = 0; else if (y < 0) y = height - 1;
+    if (x >= width || x < 0 || y >= height || y < 0) gameOver = true;
 
     for (int i = 0; i < nTail; i++)
         if (tailX[i] == x && tailY[i] == y)
@@ -172,7 +203,63 @@ void Logic() {
     }
 }
 
+void StartScreen() {
+    SetColor(11);
+    cout << "******************\n";
+    cout << "*   Snake Game   *\n";
+    cout << "******************\n";
+    SetColor(13);
+    cout << "Press 's' to Start\n";
+    cout << "Press 'q' to Quit\n";
+    char choice = ' ';
+    while (choice != 's' && choice != 'q') {
+        choice = _getch();
+        if (choice == 'q') {
+            exit(0);
+        }
+    }
+}
+
+void UpdateHighScore() {
+    if (score > highScore) {
+        highScore = score;
+    }
+}
+
+void GameOverScreen() {
+    SetColor(12);
+    ShowCursor();
+    cout << "******************\n";
+    cout << "*   Game Over!   *\n";
+    cout << "******************\n";
+    SetColor(7);
+    cout << "Final Score: " << score << endl;
+    SetColor(14);
+    cout << "High Score: " << highScore << endl;
+    SetColor(13);
+    cout << "Press 'r' to Restart\n";
+    cout << "Press 'q' to Quit\n";
+    char choice = ' ';
+    while (choice != 'r' && choice != 'q') {
+        choice = _getch();
+        if (choice == 'q') {
+            exit(0);
+        } else if (choice == 'r') {
+            Setup();
+            while (!gameOver) {
+                Draw();
+                Input();
+                Logic();
+                Sleep(manipulatedSpeedFunction(nTail) * speedFactor);
+            }
+            UpdateHighScore();
+            GameOverScreen();
+        }
+    }
+}
+
 int main() {
+    StartScreen();
     Setup();
     while (!gameOver) {
         Draw();
@@ -180,7 +267,7 @@ int main() {
         Logic();
         Sleep(manipulatedSpeedFunction(nTail) * speedFactor);
     }
-    SetColor(7);
-    cout << "Game Over! Final Score: " << score << endl;
+    UpdateHighScore();
+    GameOverScreen();
     return 0;
 }
