@@ -69,7 +69,8 @@ The provided code does not include a "super food" mechanism, but if added, consu
 - Adding a game menu for better user interaction.
 
 ## Created By
-Team - Code Slayers
+Team - Code Slayers    
+
 Members:
 1) Neel Khatri - 202401093
 2) Kavya Bhojwani - 202401090
