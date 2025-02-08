@@ -68,8 +68,14 @@ The provided code does not include a "super food" mechanism, but if added, consu
 - Improving graphics with a better UI.
 - Adding a game menu for better user interaction.
 
-## License
-This project is open-source and free to use.
+## Created By
+Team - Code Slayers
+Members:
+1) Neel Khatri - 202401093
+2) Kavya Bhojwani - 202401090
+3) Kavish Inani - 202401089
+4) Manal Patel - 202401112  
+
 
 
 
