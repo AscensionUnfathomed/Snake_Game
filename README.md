@@ -4,11 +4,22 @@
 A simple Snake game implemented in C++ using the console interface. The game features a moving snake that grows when it eats food, and the player controls the snake using keyboard inputs.
 
 ## Features
-- Classic Snake game logic.
-- Continuous movement with real-time input.
-- Game over on self-collision and boundary collision.
-- Score tracking and game duration display.
-- Console cursor hiding for smooth display updates.
+- **Classic Snake Gameplay**: Move the snake around the board, consuming food and growing in length.
+- **Continuous Movement**: The snake moves in real-time, responding instantly to player input.
+- **Game Over Conditions**:
+  - Collision with the snake's own body.
+  - Collision with the game boundary.
+- **Score Tracking & Timer**: Displays the player's current score and elapsed time.
+- **Super Food Mechanism**:
+  - Every 5th food item is a **Super Food**, worth extra points.
+  - Temporarily slows down the snake for better control.
+  - Lasts for **5 seconds** before returning to normal speed.
+- **Dynamic Speed Adjustment**:
+  - Snake speed increases as it grows, calculated using **atan(x) scaling**.
+  - Ensures gradual difficulty increase without overwhelming the player.
+- **Smooth Display**:
+  - Console cursor is hidden for a flicker-free experience.
+  - Game screen updates dynamically instead of clearing the console.
 
 ## How to Play
 - Use `W`, `A`, `S`, `D` keys to move Up, Left, Down, and Right, respectively.
@@ -55,17 +66,67 @@ A simple Snake game implemented in C++ using the console interface. The game fea
 - `bool gameOver`: Controls the main game loop.
 - `clock_t startTime`: Tracks the game duration.
 
-## Speed Variation
-The speed of the snake is controlled using the `Sleep(120);` function inside the game loop. The value `120` represents the delay in milliseconds before the next update cycle. As the game progresses, the speed remains constant unless modified manually.
+### Speed Variation
+The game dynamically adjusts the snake's speed using the **arctangent function** to ensure a smooth and progressive difficulty increase.
+
+#### Formula:
+```cpp
+ double manipulatedSpeedFunction(int x) {
+     return baseSpeed - atan(x) * 40;
+ }
+```
+- The **base speed** is initially set to **100 milliseconds**.
+- As the snake length (`nTail`) increases, speed increases gradually.
+- The `atan(x)` function prevents extreme speed-ups, maintaining **playability**.
+
+| **Tail Length (`nTail`)** | **Calculated Speed (ms delay)** |
+|----------------|----------------------|
+| 0  | 100 ms  |
+| 5  | 45.2 ms  |
+| 10 | 41.2 ms  |
+| 20 | 39.2 ms  |
 
 ### Super Food Effect
-The provided code does not include a "super food" mechanism, but if added, consuming it could temporarily increase the snake's speed by reducing the sleep duration (e.g., `Sleep(80);`). However, currently, the snake moves at a constant speed throughout the game.
+- **Every 5th food** turns into a **Super Food**, marked by a larger symbol (`O`).
+- **Effects:**
+  1. **Higher Score**: +50 points instead of +10.
+  2. **Temporary Speed Reduction**: `speedFactor /= 2;`
+  3. **Duration**: Lasts **5 seconds**, after which speed returns to normal.
 
-## Future Improvements
-- Adding different difficulty levels with increasing speed.
-- Implementing a high-score tracking system.
-- Improving graphics with a better UI.
-- Adding a game menu for better user interaction.
+**Implementation:**
+```cpp
+if (foodCounter % 5 == 0) {
+    superFood = true;
+    superFoodActive = true;
+    superFoodTime = clock();
+    speedFactor /= 2;
+}
+
+if (superFoodActive && (clock() - superFoodTime) / CLOCKS_PER_SEC >= 5) {
+    superFoodActive = false;
+    speedFactor *= 2;
+}
+```
+
+### Future Improvements
+1. **Difficulty Levels**:
+   - Implement **Easy, Medium, Hard** modes that affect initial speed and food spawn rate.
+   - Example:
+     ```cpp
+     if (difficulty == "Hard") baseSpeed = 80;
+     else if (difficulty == "Medium") baseSpeed = 100;
+     else baseSpeed = 120;
+     ```
+
+3. **Improved Graphics & UI**:
+   - Colored borders, smoother animations, and better fonts.
+   - Implement a **main menu** with options to Start, View High Scores, and Quit.
+
+4. **AI Mode**:
+   - Implement AI that avoids collisions and seeks food intelligently.
+
+---
+This **Snake Game** is designed for an engaging console experience with dynamic speed, score tracking, and special food effects.
 
 ## Created By
 Team - Code Slayers    
